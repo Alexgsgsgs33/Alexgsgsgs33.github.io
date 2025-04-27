@@ -3,26 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galería de Emprendedoras (Admin)</title>
+    <title>Panel de Administración | Emprendimientos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* [Mantener todos los estilos CSS anteriores] */
-        .spinner {
-            border: 4px solid rgba(0,0,0,0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #0d47a1;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
+        :root {
+            --primary: #3f51b5;
+            --primary-dark: #303f9f;
+            --secondary: #ff4081;
+            --light: #f5f7fa;
+            --dark: #212121;
+            --gray: #757575;
+            --white: #ffffff;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .admin-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.3);
+        }
+
+        .admin-btn.primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .admin-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .admin-btn.secondary {
+            background: var(--success);
+            color: var(--white);
+            border-color: var(--success);
+        }
+
+        .admin-btn.secondary:hover {
+            background: #43a047;
+            border-color: #43a047;
+        }
+
+        .admin-content {
+            padding: 2rem 0;
+        }
+
+        .admin-filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .admin-filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .admin-filter-btn:hover, .admin-filter-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.3);
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .admin-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .admin-card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .admin-card:hover .admin-card-img {
+            transform: scale(1.05);
+        }
+
+        .admin-card-content {
+            padding: 1.5rem;
+        }
+
+        .admin-card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .admin-card-text {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .admin-card-sector {
+            display: inline-block;
+            background: rgba(63, 81, 181, 0.1);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .admin-card-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn.view {
+            background: rgba(63, 81, 181, 0.1);
+            color: var(--primary);
+        }
+
+        .action-btn.view:hover {
+            background: rgba(63, 81, 181, 0.2);
+        }
+
+        .action-btn.delete {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+        }
+
+        .action-btn.delete:hover {
+            background: rgba(244, 67, 54, 0.2);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(244, 67, 54, 0.9);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+
+        .admin-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+            background: var(--error);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Modal Styles */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .admin-modal.show {
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+        }
+
+        .admin-modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-modal.show .admin-modal-content {
+            transform: translateY(0);
+        }
+
+        .admin-modal-header {
+            position: relative;
+        }
+
+        .admin-modal-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .admin-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.25rem;
+            color: var(--error);
+        }
+
+        .admin-close-btn:hover {
+            background: var(--error);
+            color: var(--white);
+            transform: rotate(90deg);
+        }
+
+        .admin-modal-body {
+            padding: 2rem;
+        }
+
+        .admin-modal-title {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .admin-modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-modal-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-modal-section p {
+            color: var(--dark);
+            margin-left: 1.75rem;
+        }
+
+        .admin-owner-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin: 1rem auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .admin-social-link:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.3);
+        }
+
+        .admin-social-link.facebook {
+            background: #1877f2;
+        }
+
+        .admin-social-link.instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .admin-modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .admin-modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .admin-modal-btn.delete {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .admin-modal-btn.delete:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .admin-modal-btn.close {
+            background: var(--gray);
+            color: var(--white);
+        }
+
+        .admin-modal-btn.close:hover {
+            background: #616161;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(117, 117, 117, 0.3);
+        }
+
+        /* Spinner */
+        .admin-spinner-container {
+            display: flex;
+            justify-content: center;
+            padding: 3rem;
+            grid-column: 1 / -1;
+        }
+
+        .admin-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(63, 81, 181, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-modal-content {
+                margin: 1rem;
+            }
+            
+            .admin-modal-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-title h1 {
+                font-size: 1.5rem;
+            }
+            
+            .admin-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .admin-filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .admin-modal-body {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Verificación de autenticación -->
     <script>
         const auth = JSON.parse(sessionStorage.getItem('adminAuth')) || {};
         if(!auth.logged || auth.expires < Date.now()) {
@@ -32,51 +543,118 @@
         }
     </script>
 
-    <h1>Galería de Emprendedoras (Admin)</h1>
-    
-    <div class="contenedor-botones">
-        <a href="index.html" class="btn-registro">📝 Registrar Nuevo</a>
-        <a href="publico.html" class="btn-publico">👀 Ver Vista Pública</a>
-    </div>
-    
-    <div class="filtros">
-        <button data-sector="todos" class="active">Todos</button>
-        <button data-sector="Alimentos y Bebidas">🍏 Alimentos</button>
-        <button data-sector="Artesanías">🎨 Artesanías</button>
-        <button data-sector="Belleza y Cuidado Personal">💄 Belleza</button>
-        <button data-sector="Moda y Accesorios">👗 Moda</button>
-        <button data-sector="Tecnología">💻 Tecnología</button>
-        <button data-sector="Educación">📚 Educación</button>
-        <button data-sector="Salud y Bienestar">🏥 Salud</button>
-        <button data-sector="Articulos de Novedad">🎁 Novedades</button>
-        <button data-sector="Otros">✨ Otros</button>
-    </div>
+    <header class="admin-header">
+        <div class="admin-container">
+            <div class="admin-title">
+                <h1><i class="fas fa-crown"></i> Panel de Administración</h1>
+                <div class="admin-actions">
+                    <a href="index.html" class="admin-btn primary"><i class="fas fa-plus"></i> Nuevo Registro</a>
+                    <a href="publico.html" class="admin-btn secondary"><i class="fas fa-eye"></i> Vista Pública</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <div id="spinner" class="spinner"></div>
-    <div id="contenedor" class="tarjetas"></div>
+    <main class="admin-container">
+        <div class="admin-content">
+            <div class="admin-filters">
+                <button class="admin-filter-btn active" data-sector="todos">Todos</button>
+                <button class="admin-filter-btn" data-sector="Alimentos y Bebidas"><i class="fas fa-utensils"></i> Alimentos</button>
+                <button class="admin-filter-btn" data-sector="Artesanías"><i class="fas fa-paint-brush"></i> Artesanías</button>
+                <button class="admin-filter-btn" data-sector="Belleza y Cuidado Personal"><i class="fas fa-spa"></i> Belleza</button>
+                <button class="admin-filter-btn" data-sector="Moda y Accesorios"><i class="fas fa-tshirt"></i> Moda</button>
+                <button class="admin-filter-btn" data-sector="Tecnología"><i class="fas fa-laptop"></i> Tecnología</button>
+                <button class="admin-filter-btn" data-sector="Educación"><i class="fas fa-book"></i> Educación</button>
+                <button class="admin-filter-btn" data-sector="Salud y Bienestar"><i class="fas fa-heartbeat"></i> Salud</button>
+                <button class="admin-filter-btn" data-sector="Articulos de Novedad"><i class="fas fa-gift"></i> Novedades</button>
+                <button class="admin-filter-btn" data-sector="Otros"><i class="fas fa-ellipsis-h"></i> Otros</button>
+            </div>
 
-    <div id="modal" class="modal">
-        <div class="modal-content" id="modalContent"></div>
+            <div id="adminGrid" class="admin-grid">
+                <div class="admin-spinner-container">
+                    <div class="admin-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Detalles -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <img id="adminModalImg" class="admin-modal-img" src="" alt="">
+                <button class="admin-close-btn">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <h2 id="adminModalTitle" class="admin-modal-title"></h2>
+                
+                <div class="admin-modal-section">
+                    <h4><i class="fas fa-box-open"></i> Productos/Servicios</h4>
+                    <p id="adminModalProducts"></p>
+                </div>
+                
+                <div class="admin-modal-section">
+                    <h4><i class="fas fa-tag"></i> Sector</h4>
+                    <p id="adminModalSector"></p>
+                </div>
+                
+                <div class="admin-modal-section">
+                    <h4><i class="fas fa-phone-alt"></i> Contacto</h4>
+                    <p id="adminModalContact"></p>
+                </div>
+                
+                <div class="admin-modal-section" id="adminModalAddressSection">
+                    <h4><i class="fas fa-map-marker-alt"></i> Dirección</h4>
+                    <p id="adminModalAddress"></p>
+                </div>
+                
+                <img id="adminModalOwnerImg" class="admin-owner-img" src="" alt="Emprendedora">
+                
+                <div class="admin-social-links" id="adminModalSocial">
+                    <!-- Social links will be added here -->
+                </div>
+                
+                <p style="text-align: center; margin-top: 1rem; color: var(--gray);">
+                    <small><i class="far fa-calendar-alt"></i> Registrado el: <span id="adminModalDate"></span></small>
+                </p>
+                
+                <div class="admin-modal-actions">
+                    <button id="adminModalDeleteBtn" class="admin-modal-btn delete">
+                        <i class="fas fa-trash-alt"></i> Eliminar Emprendimiento
+                    </button>
+                    <button class="admin-modal-btn close">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Configuración
             const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
-            const contenedor = document.getElementById('contenedor');
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modalContent');
-            const filtros = document.querySelectorAll('.filtros button');
-            const spinner = document.getElementById('spinner');
             
+            // Elementos del DOM
+            const adminGrid = document.getElementById('adminGrid');
+            const adminModal = document.getElementById('adminModal');
+            const filterButtons = document.querySelectorAll('.admin-filter-btn');
+            const closeButtons = document.querySelectorAll('.admin-close-btn');
+            
+            // Variables de estado
             let emprendimientos = [];
-            let emprendimientoSeleccionado = null;
+            let currentFilter = 'todos';
+            let currentEmprendimiento = null;
 
             // Cargar datos desde Google Sheets
             async function cargarDatos() {
-                spinner.style.display = 'block';
-                contenedor.innerHTML = '';
-                
                 try {
+                    adminGrid.innerHTML = `
+                        <div class="admin-spinner-container">
+                            <div class="admin-spinner"></div>
+                        </div>
+                    `;
+                    
                     const response = await fetch(URL_SCRIPT);
                     const data = await response.json();
                     
@@ -86,120 +664,151 @@
                     
                     emprendimientos = data;
                     sessionStorage.setItem('emprendimientosPublicos', JSON.stringify(data));
-                    return data;
+                    mostrarEmprendimientos();
                 } catch (error) {
                     console.error("Error al cargar datos:", error);
-                    contenedor.innerHTML = `
-                        <p class="sin-resultados">
-                            Error al cargar los emprendimientos. Recarga la página.
-                        </p>
+                    adminGrid.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem; color: var(--error);"></i>
+                            <p>Error al cargar los emprendimientos. Por favor, recarga la página.</p>
+                            <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                <i class="fas fa-sync-alt"></i> Recargar
+                            </button>
+                        </div>
                     `;
-                    return [];
-                } finally {
-                    spinner.style.display = 'none';
                 }
             }
 
-            // Mostrar emprendimientos con filtro
-            async function mostrarEmprendimientos(sector = 'todos') {
-                const datos = await cargarDatos();
-                contenedor.innerHTML = '';
+            // Mostrar emprendimientos con filtros
+            function mostrarEmprendimientos() {
+                let filtered = emprendimientos;
                 
-                if (datos.length === 0) {
-                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos registrados aún</p>';
+                // Aplicar filtro de sector
+                if (currentFilter !== 'todos') {
+                    filtered = filtered.filter(emp => emp.sector === currentFilter);
+                }
+                
+                // Mostrar resultados
+                if (filtered.length === 0) {
+                    adminGrid.innerHTML = `
+                        <div class="no-results">
+                            <i class="far fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem; color: var(--gray);"></i>
+                            <p>No se encontraron emprendimientos</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Prueba con otro filtro</p>
+                        </div>
+                    `;
                     return;
                 }
-
-                const filtrados = sector === 'todos' 
-                    ? datos 
-                    : datos.filter(emp => emp.sector === sector);
-
-                if (filtrados.length === 0) {
-                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos en esta categoría</p>';
-                    return;
-                }
-
-                filtrados.forEach(emp => {
+                
+                adminGrid.innerHTML = '';
+                filtered.forEach(emp => {
                     const card = document.createElement('div');
-                    card.className = 'negocio';
+                    card.className = 'admin-card';
                     card.innerHTML = `
-                        <button class="eliminar-tarjeta" data-id="${emp.id}" title="Eliminar">×</button>
-                        <img src="${emp.imagen}" alt="${emp.nombre}" 
-                             onerror="this.src='https://via.placeholder.com/400x200?text=Imagen+no+disponible'">
-                        <h3>${emp.nombre}</h3>
-                        <p><strong>${emp.productos}</strong></p>
-                        <p><small>Sector: ${emp.sector}</small></p>
-                        <button class="btn-eliminar" data-id="${emp.id}">🗑️ Eliminar</button>
+                        <button class="delete-btn" data-id="${emp.id}" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <img src="${emp.imagen || 'https://via.placeholder.com/500x300?text=Sin+imagen'}" 
+                             class="admin-card-img" 
+                             onerror="this.src='https://via.placeholder.com/500x300?text=Imagen+no+disponible'"
+                             alt="${emp.nombre}">
+                        <div class="admin-card-content">
+                            <h3 class="admin-card-title">${emp.nombre}</h3>
+                            <p class="admin-card-text">${emp.productos}</p>
+                            <span class="admin-card-sector">${emp.sector}</span>
+                            <div class="admin-card-actions">
+                                <button class="action-btn view" data-id="${emp.id}">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                                <button class="action-btn delete" data-id="${emp.id}">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
                     `;
                     
-                    card.addEventListener('click', (e) => {
-                        if (!e.target.classList.contains('eliminar-tarjeta') && !e.target.classList.contains('btn-eliminar')) {
-                            mostrarDetalles(emp);
-                        }
-                    });
-                    
-                    card.querySelector('.btn-eliminar').addEventListener('click', (e) => {
+                    // Evento para ver detalles
+                    card.querySelector('.action-btn.view').addEventListener('click', (e) => {
                         e.stopPropagation();
-                        eliminarEmprendimiento(emp.id);
+                        mostrarDetalleEmprendimiento(emp);
                     });
                     
-                    card.querySelector('.eliminar-tarjeta').addEventListener('click', (e) => {
+                    // Evento para eliminar desde tarjeta
+                    card.querySelector('.action-btn.delete').addEventListener('click', (e) => {
                         e.stopPropagation();
-                        eliminarEmprendimiento(emp.id);
+                        confirmarEliminacion(emp.id);
                     });
                     
-                    contenedor.appendChild(card);
+                    // Evento para eliminar con botón flotante
+                    card.querySelector('.delete-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        confirmarEliminacion(emp.id);
+                    });
+                    
+                    adminGrid.appendChild(card);
                 });
             }
 
-            // Mostrar detalles en modal
-            function mostrarDetalles(emp) {
-                emprendimientoSeleccionado = emp;
-                modalContent.innerHTML = `
-                    <span class="close">&times;</span>
-                    <img src="${emp.imagen}" alt="${emp.nombre}" 
-                         onerror="this.src='https://via.placeholder.com/600x300?text=Imagen+no+disponible'"
-                         style="max-height:300px;">
-                    <h2>${emp.nombre}</h2>
-                    <p><strong>📋 Productos/Servicios:</strong> ${emp.productos}</p>
-                    <p><strong>🏷️ Sector:</strong> ${emp.sector}</p>
-                    <p><strong>📞 Contacto:</strong> ${emp.contacto}</p>
-                    ${emp.direccion ? `<p><strong>📍 Dirección:</strong> ${emp.direccion}</p>` : ''}
-                    
-                    <img src="${emp.foto}" alt="Foto de ${emp.nombre}" 
-                         class="persona-img"
-                         onerror="this.src='https://via.placeholder.com/150?text=Foto+no+disponible'">
-                    
-                    ${emp.facebook || emp.instagram ? `
-                    <div class="redes">
-                        ${emp.facebook ? `<a href="${emp.facebook.includes('://') ? emp.facebook : 'https://'+emp.facebook}" 
-                                           target="_blank">Facebook</a>` : ''}
-                        ${emp.instagram ? `<a href="${emp.instagram.includes('://') ? emp.instagram : 'https://'+emp.instagram}" 
-                                             target="_blank">Instagram</a>` : ''}
-                    </div>` : ''}
-                    
-                    <p><small>📅 Registrado el: ${emp.fechaRegistro || 'Fecha no disponible'}</small></p>
-                    
-                    <button class="btn-eliminar" data-id="${emp.id}">
-                        🗑️ Eliminar Emprendimiento
-                    </button>
-                `;
+            // Mostrar detalles del emprendimiento
+            function mostrarDetalleEmprendimiento(emp) {
+                currentEmprendimiento = emp;
                 
-                modal.style.display = 'flex';
+                document.getElementById('adminModalImg').src = emp.imagen || 'https://via.placeholder.com/800x400?text=Sin+imagen';
+                document.getElementById('adminModalTitle').textContent = emp.nombre;
+                document.getElementById('adminModalProducts').textContent = emp.productos;
+                document.getElementById('adminModalSector').textContent = emp.sector;
+                document.getElementById('adminModalContact').textContent = emp.contacto || 'No disponible';
                 
-                modalContent.querySelector('.btn-eliminar').addEventListener('click', () => {
-                    eliminarEmprendimiento(emp.id);
-                });
+                if (emp.direccion) {
+                    document.getElementById('adminModalAddress').textContent = emp.direccion;
+                    document.getElementById('adminModalAddressSection').style.display = 'block';
+                } else {
+                    document.getElementById('adminModalAddressSection').style.display = 'none';
+                }
+                
+                document.getElementById('adminModalOwnerImg').src = emp.foto || 'https://via.placeholder.com/200?text=Sin+foto';
+                document.getElementById('adminModalDate').textContent = emp.fechaRegistro || 'Fecha no disponible';
+                
+                const socialContainer = document.getElementById('adminModalSocial');
+                socialContainer.innerHTML = '';
+                
+                if (emp.facebook) {
+                    const facebookLink = document.createElement('a');
+                    facebookLink.href = emp.facebook.includes('://') ? emp.facebook : `https://${emp.facebook}`;
+                    facebookLink.target = '_blank';
+                    facebookLink.className = 'admin-social-link facebook';
+                    facebookLink.innerHTML = '<i class="fab fa-facebook-f"></i> Facebook';
+                    socialContainer.appendChild(facebookLink);
+                }
+                
+                if (emp.instagram) {
+                    const instagramLink = document.createElement('a');
+                    instagramLink.href = emp.instagram.includes('://') ? emp.instagram : `https://${emp.instagram}`;
+                    instagramLink.target = '_blank';
+                    instagramLink.className = 'admin-social-link instagram';
+                    instagramLink.innerHTML = '<i class="fab fa-instagram"></i> Instagram';
+                    socialContainer.appendChild(instagramLink);
+                }
+                
+                if (!emp.facebook && !emp.instagram) {
+                    socialContainer.innerHTML = '<p style="text-align: center; color: var(--gray);">No hay redes sociales registradas</p>';
+                }
+                
+                // Configurar botón de eliminar en el modal
+                document.getElementById('adminModalDeleteBtn').onclick = () => {
+                    confirmarEliminacion(emp.id);
+                };
+                
+                adminModal.classList.add('show');
             }
 
-            // Función para eliminar emprendimiento
-            async function eliminarEmprendimiento(id) {
+            // Confirmar eliminación
+            async function confirmarEliminacion(id) {
                 if (!confirm('¿Estás seguro de eliminar este emprendimiento?\nEsta acción no se puede deshacer.')) {
                     return;
                 }
                 
                 try {
-                    spinner.style.display = 'block';
                     const response = await fetch(URL_SCRIPT, {
                         method: 'DELETE',
                         body: JSON.stringify({ id: id }),
@@ -210,39 +819,42 @@
                     
                     if (data.status === "success") {
                         // Cerrar modal si está abierto
-                        modal.style.display = 'none';
+                        adminModal.classList.remove('show');
                         
-                        // Recargar vista
-                        const sectorActivo = document.querySelector('.filtros button.active').dataset.sector;
-                        await mostrarEmprendimientos(sectorActivo);
+                        // Recargar datos
+                        await cargarDatos();
                     } else {
                         throw new Error(data.message || "Error al eliminar");
                     }
                 } catch (error) {
                     alert("Error al eliminar: " + error.message);
-                } finally {
-                    spinner.style.display = 'none';
                 }
             }
 
-            // Cerrar modal
-            modal.addEventListener('click', (e) => {
-                if (e.target.classList.contains('close') || e.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-
-            // Configurar filtros
-            filtros.forEach(btn => {
+            // Event Listeners
+            filterButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    filtros.forEach(b => b.classList.remove('active'));
+                    filterButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    mostrarEmprendimientos(btn.dataset.sector);
+                    currentFilter = btn.dataset.sector;
+                    mostrarEmprendimientos();
                 });
             });
 
-            // Cargar inicialmente
-            mostrarEmprendimientos();
+            closeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    adminModal.classList.remove('show');
+                });
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === adminModal) {
+                    adminModal.classList.remove('show');
+                }
+            });
+
+            // Inicialización
+            cargarDatos();
         });
     </script>
 </body>
