@@ -129,7 +129,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const formulario = document.getElementById('formulario');
-            
+            const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
+            const mensajeExito = document.getElementById('mensajeExito');
+
             // Función para leer imágenes (archivo o URL)
             const leerImagen = (inputFile, inputUrl) => {
                 return new Promise((resolve) => {
@@ -151,7 +153,6 @@
                 
                 try {
                     const emprendimiento = {
-                        id: Date.now(), // ID único basado en timestamp
                         nombre: document.getElementById('nombre').value.trim(),
                         productos: document.getElementById('productos').value.trim(),
                         sector: document.getElementById('sector').value,
@@ -183,23 +184,28 @@
                         return;
                     }
 
-                    // Guardar en localStorage
-                    const emprendimientos = JSON.parse(localStorage.getItem('emprendimientos')) || [];
-                    emprendimientos.push(emprendimiento);
-                    localStorage.setItem('emprendimientos', JSON.stringify(emprendimientos));
+                    // Enviar a Google Sheets
+                    const response = await fetch(URL_SCRIPT, {
+                        method: 'POST',
+                        body: JSON.stringify(emprendimiento),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-                    // Feedback visual
-                    const mensajeExito = document.getElementById('mensajeExito');
-                    mensajeExito.textContent = `✅ ¡${emprendimiento.nombre} registrado con éxito!`;
-                    mensajeExito.style.display = "block";
-                    
-                    // Limpiar formulario
-                    formulario.reset();
-                    
-                    // Ocultar mensaje después de 3 segundos
-                    setTimeout(() => {
-                        mensajeExito.style.display = "none";
-                    }, 3000);
+                    const data = await response.json();
+
+                    if (data.status === "success") {
+                        mensajeExito.textContent = `✅ ¡${emprendimiento.nombre} registrado con éxito!`;
+                        mensajeExito.style.display = "block";
+                        formulario.reset();
+                        
+                        setTimeout(() => {
+                            mensajeExito.style.display = "none";
+                        }, 3000);
+                    } else {
+                        throw new Error("Error en la respuesta del servidor");
+                    }
 
                 } catch (error) {
                     console.error("Error al registrar:", error);
