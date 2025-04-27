@@ -17,20 +17,46 @@
             margin-bottom: 20px;
             font-size: 2.5em;
         }
-        .volver {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: #0d47a1;
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
+        .contenedor-botones {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
-        .volver:hover {
-            background-color: #093170;
+        .btn-registro {
+            padding: 10px 20px;
+            background-color: #673AB7;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-registro:hover {
+            background-color: #5E35B1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-publico {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-publico:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .tarjetas {
             display: flex;
@@ -145,24 +171,6 @@
             font-style: italic;
             margin-top: 40px;
         }
-        .btn-publico {
-            display: block;
-            width: 250px;
-            margin: 0 auto 30px;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .btn-publico:hover {
-            background-color: #3e8e41;
-            transform: translateY(-2px);
-        }
-        /* Estilos para el botón de eliminar */
         .btn-eliminar {
             background-color: #ff4444;
             color: white;
@@ -200,11 +208,25 @@
     </style>
 </head>
 <body>
+    <!-- Verificación de autenticación -->
+    <script>
+        const auth = JSON.parse(sessionStorage.getItem('adminAuth')) || {};
+        if(!auth.logged || auth.expires < Date.now()) {
+            sessionStorage.removeItem('adminAuth');
+            alert('Debes iniciar sesión para acceder a esta página');
+            window.location.href = 'publico.html';
+        }
+    </script>
+
     <h1>Galería de Emprendedoras (Admin)</h1>
     
-    <a href="index.html" class="volver">← Volver al Registro</a>
-    <a href="publico.html" class="btn-publico">👁️ Ver Vista Pública</a>
+    <!-- Botones de navegación mejorados -->
+    <div class="contenedor-botones">
+        <a href="index.html" class="btn-registro">📝 Registrar Nuevo</a>
+        <a href="publico.html" class="btn-publico">👀 Ver Vista Pública</a>
+    </div>
     
+    <!-- Filtros por sector -->
     <div class="filtros">
         <button data-sector="todos" class="active">Todos</button>
         <button data-sector="Alimentos y Bebidas">🍏 Alimentos</button>
@@ -215,12 +237,12 @@
         <button data-sector="Educación">📚 Educación</button>
         <button data-sector="Salud y Bienestar">🏥 Salud</button>
         <button data-sector="Articulos de Novedad">🎁 Novedades</button>
+        <button data-sector="Otros">✨ Otros</button>
     </div>
 
-    <div id="contenedor" class="tarjetas">
-        <p class="sin-resultados">Cargando emprendimientos...</p>
-    </div>
+    <div id="contenedor" class="tarjetas"></div>
 
+    <!-- Modal para detalles -->
     <div id="modal" class="modal">
         <div class="modal-content" id="modalContent"></div>
     </div>
@@ -354,8 +376,6 @@
                 // Recargar vista
                 const sectorActivo = document.querySelector('.filtros button.active').dataset.sector;
                 mostrarEmprendimientos(sectorActivo);
-                
-                console.log(`Emprendimiento con ID ${id} eliminado`);
             }
 
             // Cerrar modal
