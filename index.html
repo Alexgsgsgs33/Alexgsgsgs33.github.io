@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Emprendedoras</title>
     <style>
         body {
@@ -24,12 +25,16 @@
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        form input, form select, form label {
+        form input, form select, form textarea, form label {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             box-sizing: border-box;
             font-size: 1em;
+        }
+        form textarea {
+            min-height: 80px;
+            resize: vertical;
         }
         form button {
             width: 100%;
@@ -74,6 +79,33 @@
             content: " *";
             color: red;
         }
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #0d47a1;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 10px 0;
+            display: none;
+            border-radius: 8px;
+        }
+        .error-message {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: -5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -82,9 +114,11 @@
     <form id="formulario">
         <label class="campo-obligatorio">Nombre del Negocio</label>
         <input type="text" id="nombre" placeholder="Ej: Dulces Artesanales María" required>
+        <div id="nombreError" class="error-message"></div>
         
         <label class="campo-obligatorio">Productos/Servicios</label>
-        <input type="text" id="productos" placeholder="Ej: Postres tradicionales, tortas personalizadas" required>
+        <textarea id="productos" placeholder="Ej: Postres tradicionales, tortas personalizadas" required></textarea>
+        <div id="productosError" class="error-message"></div>
         
         <label class="campo-obligatorio">Sector Económico</label>
         <select id="sector" required>
@@ -99,19 +133,23 @@
             <option value="Articulos de Novedad">Artículos de novedad</option>
             <option value="Otros">Otros</option>
         </select>
+        <div id="sectorError" class="error-message"></div>
         
         <label>Dirección</label>
-        <input type="text" id="direccion" placeholder="Ej: Calle 10 #20-30, Barrio Centro">
+        <input type="text" id="direccion" placeholder="Ej: Calle 10 #20-30, Barrio Centro" autocomplete="address-line1">
         
         <label class="campo-obligatorio">Contacto</label>
         <input type="text" id="contacto" placeholder="Teléfono/WhatsApp/Email" required>
+        <div id="contactoError" class="error-message"></div>
         
         <label>Imagen del negocio (subir o URL)</label>
         <input type="file" id="imagenFile" accept="image/*">
+        <img id="imagenPreview" class="image-preview" alt="Vista previa imagen">
         <input type="url" id="imagenUrl" placeholder="o pega una URL de la imagen">
         
         <label>Foto de la emprendedora (subir o URL)</label>
         <input type="file" id="fotoFile" accept="image/*">
+        <img id="fotoPreview" class="image-preview" alt="Vista previa foto">
         <input type="url" id="fotoUrl" placeholder="o pega una URL de la foto">
         
         <label>URL de Facebook (opcional)</label>
@@ -121,26 +159,68 @@
         <input type="url" id="instagram" placeholder="https://instagram.com/tunegocio">
         
         <button type="submit">Registrar Emprendimiento</button>
+        <div class="spinner" id="spinner"></div>
+        <div id="mensajeExito" class="mensaje-exito"></div>
         <a href="galeria.html" id="verGaleria">Ver Galería de Emprendimientos</a>
     </form>
-
-    <div id="mensajeExito" class="mensaje-exito"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const formulario = document.getElementById('formulario');
             const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
             const mensajeExito = document.getElementById('mensajeExito');
+            const spinner = document.getElementById('spinner');
+
+            // Vista previa de imágenes
+            document.getElementById('imagenFile').addEventListener('change', function(e) {
+                const preview = document.getElementById('imagenPreview');
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("La imagen excede el tamaño máximo de 2MB");
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('fotoFile').addEventListener('change', function(e) {
+                const preview = document.getElementById('fotoPreview');
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("La foto excede el tamaño máximo de 2MB");
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
 
             // Función para leer imágenes (archivo o URL)
-            const leerImagen = (inputFile, inputUrl) => {
+            const leerImagen = (inputFile, inputUrl, previewId) => {
                 return new Promise((resolve) => {
                     const file = inputFile.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onload = (e) => {
+                            document.getElementById(previewId).src = e.target.result;
+                            resolve(e.target.result);
+                        };
                         reader.readAsDataURL(file);
                     } else if (inputUrl.value.trim() !== "") {
+                        document.getElementById(previewId).src = inputUrl.value.trim();
                         resolve(inputUrl.value.trim());
                     } else {
                         resolve("https://via.placeholder.com/600x300.png?text=Imagen+no+disponible");
@@ -148,10 +228,24 @@
                 });
             };
 
+            // Validación de contacto
+            const validarContacto = (contacto) => {
+                const esEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto);
+                const esTelefono = /^[\d\s+-]{7,}$/.test(contacto);
+                return esEmail || esTelefono;
+            };
+
             formulario.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+                spinner.style.display = 'block';
+                formulario.querySelector('button[type="submit"]').disabled = true;
+
                 try {
+                    // Resetear mensajes de error
+                    document.querySelectorAll('.error-message').forEach(el => {
+                        el.style.display = 'none';
+                    });
+
                     const emprendimiento = {
                         nombre: document.getElementById('nombre').value.trim(),
                         productos: document.getElementById('productos').value.trim(),
@@ -160,11 +254,13 @@
                         contacto: document.getElementById('contacto').value.trim(),
                         imagen: await leerImagen(
                             document.getElementById('imagenFile'),
-                            document.getElementById('imagenUrl')
+                            document.getElementById('imagenUrl'),
+                            'imagenPreview'
                         ),
                         foto: await leerImagen(
                             document.getElementById('fotoFile'),
-                            document.getElementById('fotoUrl')
+                            document.getElementById('fotoUrl'),
+                            'fotoPreview'
                         ),
                         facebook: document.getElementById('facebook').value.trim(),
                         instagram: document.getElementById('instagram').value.trim(),
@@ -178,10 +274,35 @@
                         })
                     };
 
-                    // Validación básica
-                    if (!emprendimiento.nombre || !emprendimiento.productos || !emprendimiento.sector || !emprendimiento.contacto) {
-                        alert("⚠️ Por favor complete todos los campos obligatorios");
-                        return;
+                    // Validaciones
+                    let isValid = true;
+                    if (!emprendimiento.nombre) {
+                        document.getElementById('nombreError').textContent = "Este campo es obligatorio";
+                        document.getElementById('nombreError').style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!emprendimiento.productos) {
+                        document.getElementById('productosError').textContent = "Este campo es obligatorio";
+                        document.getElementById('productosError').style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!emprendimiento.sector) {
+                        document.getElementById('sectorError').textContent = "Seleccione un sector";
+                        document.getElementById('sectorError').style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!emprendimiento.contacto) {
+                        document.getElementById('contactoError').textContent = "Este campo es obligatorio";
+                        document.getElementById('contactoError').style.display = 'block';
+                        isValid = false;
+                    } else if (!validarContacto(emprendimiento.contacto)) {
+                        document.getElementById('contactoError').textContent = "Ingrese un email o teléfono válido";
+                        document.getElementById('contactoError').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        throw new Error("Validación fallida");
                     }
 
                     // Enviar a Google Sheets
@@ -196,20 +317,28 @@
                     const data = await response.json();
 
                     if (data.status === "success") {
-                        mensajeExito.textContent = `✅ ¡${emprendimiento.nombre} registrado con éxito!`;
+                        mensajeExito.textContent = `✅ ¡${emprendimiento.nombre} registrado con éxito! ID: ${data.id}`;
                         mensajeExito.style.display = "block";
                         formulario.reset();
+                        document.querySelectorAll('.image-preview').forEach(img => {
+                            img.style.display = 'none';
+                        });
                         
                         setTimeout(() => {
                             mensajeExito.style.display = "none";
-                        }, 3000);
+                        }, 5000);
                     } else {
-                        throw new Error("Error en la respuesta del servidor");
+                        throw new Error(data.message || "Error en la respuesta del servidor");
                     }
 
                 } catch (error) {
                     console.error("Error al registrar:", error);
-                    alert("❌ Ocurrió un error al registrar el emprendimiento");
+                    if (error.message !== "Validación fallida") {
+                        alert("❌ Ocurrió un error al registrar: " + error.message);
+                    }
+                } finally {
+                    spinner.style.display = 'none';
+                    formulario.querySelector('button[type="submit"]').disabled = false;
                 }
             });
         });
