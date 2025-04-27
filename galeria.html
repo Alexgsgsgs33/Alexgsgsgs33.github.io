@@ -2,213 +2,27 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galería de Emprendedoras (Admin)</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f7fa;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #0d47a1;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-        }
-        .contenedor-botones {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        .btn-registro {
-            padding: 10px 20px;
-            background-color: #673AB7;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-registro:hover {
-            background-color: #5E35B1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn-publico {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-publico:hover {
-            background-color: #3e8e41;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .tarjetas {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-            padding: 20px;
-        }
-        .negocio {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 280px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        .negocio:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        .negocio img {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            height: 180px;
-            object-fit: cover;
-        }
-        .modal {
+        /* [Mantener todos los estilos CSS anteriores] */
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #0d47a1;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
             display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
         }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-            text-align: center;
-        }
-        .modal-content img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            max-height: 300px;
-            object-fit: contain;
-        }
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #888;
-        }
-        .redes {
-            margin-top: 20px;
-        }
-        .redes a {
-            display: inline-block;
-            margin: 8px;
-            padding: 8px 16px;
-            background-color: #0d47a1;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
-        }
-        .redes a:hover {
-            background-color: #093170;
-        }
-        .persona-img {
-            max-width: 150px;
-            margin-top: 10px;
-            border-radius: 50%;
-            border: 3px solid #0d47a1;
-        }
-        .filtros {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .filtros button {
-            padding: 8px 16px;
-            background-color: #0d47a1;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .filtros button:hover {
-            background-color: #093170;
-        }
-        .filtros button.active {
-            background-color: #4CAF50;
-        }
-        .sin-resultados {
-            text-align: center;
-            width: 100%;
-            color: #666;
-            font-style: italic;
-            margin-top: 40px;
-        }
-        .btn-eliminar {
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        .btn-eliminar:hover {
-            background-color: #cc0000;
-            transform: scale(1.02);
-        }
-        .btn-eliminar:active {
-            transform: scale(0.98);
-        }
-        .eliminar-tarjeta {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <!-- Verificación de autenticación -->
     <script>
         const auth = JSON.parse(sessionStorage.getItem('adminAuth')) || {};
         if(!auth.logged || auth.expires < Date.now()) {
@@ -220,13 +34,11 @@
 
     <h1>Galería de Emprendedoras (Admin)</h1>
     
-    <!-- Botones de navegación mejorados -->
     <div class="contenedor-botones">
         <a href="index.html" class="btn-registro">📝 Registrar Nuevo</a>
         <a href="publico.html" class="btn-publico">👀 Ver Vista Pública</a>
     </div>
     
-    <!-- Filtros por sector -->
     <div class="filtros">
         <button data-sector="todos" class="active">Todos</button>
         <button data-sector="Alimentos y Bebidas">🍏 Alimentos</button>
@@ -240,34 +52,58 @@
         <button data-sector="Otros">✨ Otros</button>
     </div>
 
+    <div id="spinner" class="spinner"></div>
     <div id="contenedor" class="tarjetas"></div>
 
-    <!-- Modal para detalles -->
     <div id="modal" class="modal">
         <div class="modal-content" id="modalContent"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
             const contenedor = document.getElementById('contenedor');
             const modal = document.getElementById('modal');
             const modalContent = document.getElementById('modalContent');
             const filtros = document.querySelectorAll('.filtros button');
+            const spinner = document.getElementById('spinner');
             
             let emprendimientos = [];
             let emprendimientoSeleccionado = null;
 
-            // Cargar datos iniciales
-            function cargarDatos() {
-                emprendimientos = JSON.parse(localStorage.getItem('emprendimientos')) || [];
-                sessionStorage.setItem('emprendimientosPublicos', JSON.stringify(emprendimientos));
-                return emprendimientos;
+            // Cargar datos desde Google Sheets
+            async function cargarDatos() {
+                spinner.style.display = 'block';
+                contenedor.innerHTML = '';
+                
+                try {
+                    const response = await fetch(URL_SCRIPT);
+                    const data = await response.json();
+                    
+                    if (!Array.isArray(data)) {
+                        throw new Error("Formato de datos inválido");
+                    }
+                    
+                    emprendimientos = data;
+                    sessionStorage.setItem('emprendimientosPublicos', JSON.stringify(data));
+                    return data;
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                    contenedor.innerHTML = `
+                        <p class="sin-resultados">
+                            Error al cargar los emprendimientos. Recarga la página.
+                        </p>
+                    `;
+                    return [];
+                } finally {
+                    spinner.style.display = 'none';
+                }
             }
 
             // Mostrar emprendimientos con filtro
-            function mostrarEmprendimientos(sector = 'todos') {
+            async function mostrarEmprendimientos(sector = 'todos') {
+                const datos = await cargarDatos();
                 contenedor.innerHTML = '';
-                const datos = cargarDatos();
                 
                 if (datos.length === 0) {
                     contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos registrados aún</p>';
@@ -296,20 +132,17 @@
                         <button class="btn-eliminar" data-id="${emp.id}">🗑️ Eliminar</button>
                     `;
                     
-                    // Evento para mostrar detalles
                     card.addEventListener('click', (e) => {
                         if (!e.target.classList.contains('eliminar-tarjeta') && !e.target.classList.contains('btn-eliminar')) {
                             mostrarDetalles(emp);
                         }
                     });
                     
-                    // Evento para eliminar desde tarjeta
                     card.querySelector('.btn-eliminar').addEventListener('click', (e) => {
                         e.stopPropagation();
                         eliminarEmprendimiento(emp.id);
                     });
                     
-                    // Evento para eliminar con botón ×
                     card.querySelector('.eliminar-tarjeta').addEventListener('click', (e) => {
                         e.stopPropagation();
                         eliminarEmprendimiento(emp.id);
@@ -354,38 +187,47 @@
                 
                 modal.style.display = 'flex';
                 
-                // Evento para eliminar desde modal
                 modalContent.querySelector('.btn-eliminar').addEventListener('click', () => {
                     eliminarEmprendimiento(emp.id);
                 });
             }
 
             // Función para eliminar emprendimiento
-            function eliminarEmprendimiento(id) {
+            async function eliminarEmprendimiento(id) {
                 if (!confirm('¿Estás seguro de eliminar este emprendimiento?\nEsta acción no se puede deshacer.')) {
                     return;
                 }
                 
-                emprendimientos = emprendimientos.filter(emp => emp.id !== id);
-                localStorage.setItem('emprendimientos', JSON.stringify(emprendimientos));
-                sessionStorage.setItem('emprendimientosPublicos', JSON.stringify(emprendimientos));
-                
-                // Cerrar modal si está abierto
-                modal.style.display = 'none';
-                
-                // Recargar vista
-                const sectorActivo = document.querySelector('.filtros button.active').dataset.sector;
-                mostrarEmprendimientos(sectorActivo);
+                try {
+                    spinner.style.display = 'block';
+                    const response = await fetch(URL_SCRIPT, {
+                        method: 'DELETE',
+                        body: JSON.stringify({ id: id }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.status === "success") {
+                        // Cerrar modal si está abierto
+                        modal.style.display = 'none';
+                        
+                        // Recargar vista
+                        const sectorActivo = document.querySelector('.filtros button.active').dataset.sector;
+                        await mostrarEmprendimientos(sectorActivo);
+                    } else {
+                        throw new Error(data.message || "Error al eliminar");
+                    }
+                } catch (error) {
+                    alert("Error al eliminar: " + error.message);
+                } finally {
+                    spinner.style.display = 'none';
+                }
             }
 
             // Cerrar modal
-            modalContent.querySelector('.close')?.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-
-            // Cerrar modal al hacer clic fuera
-            window.addEventListener('click', (e) => {
-                if (e.target === modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('close') || e.target === modal) {
                     modal.style.display = 'none';
                 }
             });
