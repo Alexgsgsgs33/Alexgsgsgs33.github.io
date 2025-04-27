@@ -3,102 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emprendimientos Femeninos - Vista Pública</title>
+    <title>Emprendimientos Femeninos | Directorio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* [Mantener todos los estilos CSS anteriores] */
-        .spinner {
-            border: 4px solid rgba(0,0,0,0.1);
-            width: 36px;
-            height: 36px;
+        :root {
+            --primary: #3f51b5;
+            --primary-dark: #303f9f;
+            --secondary: #ff4081;
+            --light: #f5f7fa;
+            --dark: #212121;
+            --gray: #757575;
+            --white: #ffffff;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            background: var(--white);
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #searchButton {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #searchButton:hover {
+            background: var(--primary-dark);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.3);
+        }
+
+        .business-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0 3rem;
+        }
+
+        .business-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .business-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .business-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .business-card:hover .business-img {
+            transform: scale(1.05);
+        }
+
+        .business-info {
+            padding: 1.5rem;
+        }
+
+        .business-info h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .business-info p {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .business-sector {
+            display: inline-block;
+            background: rgba(63, 81, 181, 0.1);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .business-contact {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 2rem auto;
+            padding: 0.75rem 1.5rem;
+            background: var(--success);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .admin-btn:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.show {
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            position: relative;
+        }
+
+        .modal-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
             border-radius: 50%;
-            border-left-color: #0d47a1;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.25rem;
+            color: var(--error);
+        }
+
+        .close-btn:hover {
+            background: var(--error);
+            color: var(--white);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-section p {
+            color: var(--dark);
+            margin-left: 1.75rem;
+        }
+
+        .owner-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin: 1rem auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .social-link:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.3);
+        }
+
+        .social-link.facebook {
+            background: #1877f2;
+        }
+
+        .social-link.instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        /* Spinner */
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(63, 81, 181, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Login Modal */
+        .login-form {
+            padding: 2rem;
+        }
+
+        .login-form h3 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .login-error {
+            color: var(--error);
+            text-align: center;
+            margin-top: 1rem;
             display: none;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .business-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .modal-body {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Emprendimientos Femeninos</h1>
-            <p class="subtitle">Descubre y apoya negocios liderados por mujeres</p>
+            <div class="hero">
+                <h1>Emprendimientos Femeninos</h1>
+                <p>Descubre y apoya negocios liderados por mujeres en tu comunidad</p>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="filtros">
-            <button class="filtro-btn active" data-sector="todos">🌟 Todos</button>
-            <button class="filtro-btn" data-sector="Alimentos y Bebidas">🍏 Alimentos</button>
-            <button class="filtro-btn" data-sector="Artesanías">🎨 Artesanías</button>
-            <button class="filtro-btn" data-sector="Belleza y Cuidado Personal">💄 Belleza</button>
-            <button class="filtro-btn" data-sector="Moda y Accesorios">👗 Moda</button>
-            <button class="filtro-btn" data-sector="Tecnología">💻 Tecnología</button>
-            <button class="filtro-btn" data-sector="Educación">📚 Educación</button>
-            <button class="filtro-btn" data-sector="Salud y Bienestar">🏥 Salud</button>
-            <button class="filtro-btn" data-sector="Articulos de Novedad">🎁 Novedades</button>
-            <button class="filtro-btn" data-sector="Otros">✨ Otros</button>
+    <main class="container">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar emprendimientos...">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
         </div>
 
-        <div id="spinner" class="spinner"></div>
-        <div id="contenedor" class="tarjetas">
-            <p class="sin-resultados">Cargando emprendimientos...</p>
+        <div class="filters">
+            <button class="filter-btn active" data-sector="todos">Todos</button>
+            <button class="filter-btn" data-sector="Alimentos y Bebidas"><i class="fas fa-utensils"></i> Alimentos</button>
+            <button class="filter-btn" data-sector="Artesanías"><i class="fas fa-paint-brush"></i> Artesanías</button>
+            <button class="filter-btn" data-sector="Belleza y Cuidado Personal"><i class="fas fa-spa"></i> Belleza</button>
+            <button class="filter-btn" data-sector="Moda y Accesorios"><i class="fas fa-tshirt"></i> Moda</button>
+            <button class="filter-btn" data-sector="Tecnología"><i class="fas fa-laptop"></i> Tecnología</button>
+            <button class="filter-btn" data-sector="Educación"><i class="fas fa-book"></i> Educación</button>
+            <button class="filter-btn" data-sector="Salud y Bienestar"><i class="fas fa-heartbeat"></i> Salud</button>
+            <button class="filter-btn" data-sector="Articulos de Novedad"><i class="fas fa-gift"></i> Novedades</button>
+            <button class="filter-btn" data-sector="Otros"><i class="fas fa-ellipsis-h"></i> Otros</button>
+        </div>
+
+        <div id="businessGrid" class="business-grid">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+            </div>
         </div>
 
         <center>
-            <button id="btn-admin" class="admin-link">🔒 Acceso Administradores</button>
+            <button id="adminBtn" class="admin-btn"><i class="fas fa-lock"></i> Acceso Administradores</button>
         </center>
-    </div>
+    </main>
 
-    <div id="modal" class="modal">
+    <!-- Business Detail Modal -->
+    <div id="businessModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modal-info"></div>
+            <div class="modal-header">
+                <img id="modalBusinessImg" class="modal-img" src="" alt="">
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h2 id="modalBusinessName" class="modal-title"></h2>
+                
+                <div class="modal-section">
+                    <h4><i class="fas fa-box-open"></i> Productos/Servicios</h4>
+                    <p id="modalBusinessProducts"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h4><i class="fas fa-tag"></i> Sector</h4>
+                    <p id="modalBusinessSector"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h4><i class="fas fa-phone-alt"></i> Contacto</h4>
+                    <p id="modalBusinessContact"></p>
+                </div>
+                
+                <div class="modal-section" id="modalBusinessAddressSection">
+                    <h4><i class="fas fa-map-marker-alt"></i> Dirección</h4>
+                    <p id="modalBusinessAddress"></p>
+                </div>
+                
+                <img id="modalBusinessOwnerImg" class="owner-img" src="" alt="Emprendedora">
+                
+                <div class="social-links" id="modalBusinessSocial">
+                    <!-- Social links will be added here -->
+                </div>
+                
+                <p style="text-align: center; margin-top: 2rem; color: var(--gray);">
+                    <small><i class="far fa-calendar-alt"></i> Registrado el: <span id="modalBusinessDate"></span></small>
+                </p>
+            </div>
         </div>
     </div>
 
+    <!-- Admin Login Modal -->
     <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 style="text-align:center; color:#0d47a1;">Acceso Administrativo</h3>
-            <form id="loginForm">
-                <input type="text" id="usuario" placeholder="Usuario" required>
-                <input type="password" id="password" placeholder="Contraseña" required>
-                <button type="submit">Ingresar</button>
-                <p id="loginError" class="login-error">Credenciales incorrectas</p>
-            </form>
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-btn">&times;</button>
+            <div class="login-form">
+                <h3><i class="fas fa-lock"></i> Acceso Administrativo</h3>
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" placeholder="Ingresa tu usuario">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña">
+                </div>
+                <button id="loginButton" class="login-btn">Ingresar</button>
+                <p id="loginError" class="login-error"><i class="fas fa-exclamation-circle"></i> Credenciales incorrectas</p>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Configuración
             const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
             const CREDENCIALES = {
                 usuario: "admin",
                 password: "emprendedoras2024"
             };
 
-            const contenedor = document.getElementById('contenedor');
-            const modal = document.getElementById('modal');
-            const modalInfo = document.getElementById('modal-info');
+            // Elementos del DOM
+            const businessGrid = document.getElementById('businessGrid');
+            const businessModal = document.getElementById('businessModal');
             const loginModal = document.getElementById('loginModal');
-            const btnAdmin = document.getElementById('btn-admin');
-            const loginForm = document.getElementById('loginForm');
+            const adminBtn = document.getElementById('adminBtn');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const closeButtons = document.querySelectorAll('.close-btn');
+            const loginButton = document.getElementById('loginButton');
             const loginError = document.getElementById('loginError');
-            const closeButtons = document.querySelectorAll('.close');
-            const filtros = document.querySelectorAll('.filtro-btn');
-            const spinner = document.getElementById('spinner');
 
-            // Cargar datos desde Google Sheets
+            // Variables de estado
+            let emprendimientos = [];
+            let currentFilter = 'todos';
+            let currentSearch = '';
+
+            // Cargar datos iniciales
             async function cargarDatos() {
-                spinner.style.display = 'block';
-                contenedor.innerHTML = '';
-                
                 try {
+                    businessGrid.innerHTML = `
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                    `;
+                    
                     const response = await fetch(URL_SCRIPT);
                     const data = await response.json();
                     
@@ -106,110 +651,154 @@
                         throw new Error("Formato de datos inválido");
                     }
                     
+                    emprendimientos = data;
                     sessionStorage.setItem('emprendimientosPublicos', JSON.stringify(data));
-                    return data;
+                    mostrarEmprendimientos();
                 } catch (error) {
                     console.error("Error al cargar datos:", error);
-                    contenedor.innerHTML = `
-                        <p class="sin-resultados">
-                            Error al cargar los emprendimientos. Intenta recargar la página.
-                        </p>
+                    businessGrid.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem; color: var(--error);"></i>
+                            <p>Error al cargar los emprendimientos. Por favor, recarga la página.</p>
+                            <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                <i class="fas fa-sync-alt"></i> Recargar
+                            </button>
+                        </div>
                     `;
-                    return [];
-                } finally {
-                    spinner.style.display = 'none';
                 }
             }
 
-            // Mostrar emprendimientos con filtro
-            async function mostrarEmprendimientos(sector = 'todos') {
-                const datos = await cargarDatos();
-                contenedor.innerHTML = '';
+            // Mostrar emprendimientos con filtros
+            function mostrarEmprendimientos() {
+                let filtered = emprendimientos;
                 
-                if (datos.length === 0) {
-                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos registrados aún</p>';
+                // Aplicar filtro de sector
+                if (currentFilter !== 'todos') {
+                    filtered = filtered.filter(emp => emp.sector === currentFilter);
+                }
+                
+                // Aplicar filtro de búsqueda
+                if (currentSearch) {
+                    const searchTerm = currentSearch.toLowerCase();
+                    filtered = filtered.filter(emp => 
+                        emp.nombre.toLowerCase().includes(searchTerm) || 
+                        emp.productos.toLowerCase().includes(searchTerm) ||
+                        emp.sector.toLowerCase().includes(searchTerm)
+                }
+                
+                // Mostrar resultados
+                if (filtered.length === 0) {
+                    businessGrid.innerHTML = `
+                        <div class="no-results">
+                            <i class="far fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem; color: var(--gray);"></i>
+                            <p>No se encontraron emprendimientos</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Prueba con otro filtro o término de búsqueda</p>
+                        </div>
+                    `;
                     return;
                 }
-
-                const filtrados = sector === 'todos' 
-                    ? datos 
-                    : datos.filter(emp => emp.sector === sector);
-
-                if (filtrados.length === 0) {
-                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos en esta categoría</p>';
-                    return;
-                }
-
-                filtrados.forEach(emp => {
+                
+                businessGrid.innerHTML = '';
+                filtered.forEach(emp => {
                     const card = document.createElement('div');
-                    card.className = 'negocio';
+                    card.className = 'business-card';
                     card.innerHTML = `
-                        <img src="${emp.imagen}" 
+                        <img src="${emp.imagen || 'https://via.placeholder.com/500x300?text=Sin+imagen'}" 
+                             class="business-img" 
                              onerror="this.src='https://via.placeholder.com/500x300?text=Imagen+no+disponible'"
                              alt="${emp.nombre}">
-                        <h3>${emp.nombre}</h3>
-                        <p><strong>${emp.productos}</strong></p>
-                        <span class="sector">${emp.sector}</span>
-                        <p style="margin-top:15px; color:#0d47a1; font-weight:500;">
-                            👆 Haz clic para ver detalles
-                        </p>
+                        <div class="business-info">
+                            <h3>${emp.nombre}</h3>
+                            <p>${emp.productos}</p>
+                            <span class="business-sector">${emp.sector}</span>
+                            <div class="business-contact">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>${emp.contacto || 'Contacto no disponible'}</span>
+                            </div>
+                        </div>
                     `;
-                    card.addEventListener('click', () => mostrarDetalles(emp));
-                    contenedor.appendChild(card);
+                    card.addEventListener('click', () => mostrarDetalleEmprendimiento(emp));
+                    businessGrid.appendChild(card);
                 });
             }
 
-            // Mostrar detalles en modal
-            function mostrarDetalles(emp) {
-                modalInfo.innerHTML = `
-                    <img src="${emp.imagen}" class="modal-img"
-                         onerror="this.src='https://via.placeholder.com/800x400?text=Imagen+no+disponible'"
-                         alt="${emp.nombre}">
-                    
-                    <h2 style="color:#0d47a1; margin-bottom:15px;">${emp.nombre}</h2>
-                    
-                    <div class="info-box">
-                        <p><strong>📋 Productos/Servicios:</strong> ${emp.productos}</p>
-                        <p><strong>🏷️ Sector:</strong> ${emp.sector}</p>
-                    </div>
-                    
-                    <div class="info-box">
-                        <p><strong>📞 Contacto:</strong> ${emp.contacto}</p>
-                        ${emp.direccion ? `<p><strong>📍 Dirección:</strong> ${emp.direccion}</p>` : ''}
-                    </div>
-                    
-                    <img src="${emp.foto}" class="persona-img" 
-                         onerror="this.src='https://via.placeholder.com/200?text=Foto+no+disponible'"
-                         alt="Emprendedora: ${emp.nombre}">
-                    
-                    ${(emp.facebook || emp.instagram) ? `
-                    <div class="redes">
-                        ${emp.facebook ? `<a href="${emp.facebook.includes('://') ? emp.facebook : 'https://'+emp.facebook}" 
-                                           target="_blank">Facebook</a>` : ''}
-                        ${emp.instagram ? `<a href="${emp.instagram.includes('://') ? emp.instagram : 'https://'+emp.instagram}" 
-                                             target="_blank">Instagram</a>` : ''}
-                    </div>` : ''}
-                    
-                    <p style="text-align:center; margin-top:20px; color:#777;">
-                        <small>📅 Registrado el: ${emp.fechaRegistro || 'Fecha no disponible'}</small>
-                    </p>
-                `;
-                modal.style.display = 'flex';
+            // Mostrar detalles del emprendimiento
+            function mostrarDetalleEmprendimiento(emp) {
+                document.getElementById('modalBusinessImg').src = emp.imagen || 'https://via.placeholder.com/800x400?text=Sin+imagen';
+                document.getElementById('modalBusinessName').textContent = emp.nombre;
+                document.getElementById('modalBusinessProducts').textContent = emp.productos;
+                document.getElementById('modalBusinessSector').textContent = emp.sector;
+                document.getElementById('modalBusinessContact').textContent = emp.contacto || 'No disponible';
+                
+                if (emp.direccion) {
+                    document.getElementById('modalBusinessAddress').textContent = emp.direccion;
+                    document.getElementById('modalBusinessAddressSection').style.display = 'block';
+                } else {
+                    document.getElementById('modalBusinessAddressSection').style.display = 'none';
+                }
+                
+                document.getElementById('modalBusinessOwnerImg').src = emp.foto || 'https://via.placeholder.com/200?text=Sin+foto';
+                document.getElementById('modalBusinessDate').textContent = emp.fechaRegistro || 'Fecha no disponible';
+                
+                const socialContainer = document.getElementById('modalBusinessSocial');
+                socialContainer.innerHTML = '';
+                
+                if (emp.facebook) {
+                    const facebookLink = document.createElement('a');
+                    facebookLink.href = emp.facebook.includes('://') ? emp.facebook : `https://${emp.facebook}`;
+                    facebookLink.target = '_blank';
+                    facebookLink.className = 'social-link facebook';
+                    facebookLink.innerHTML = '<i class="fab fa-facebook-f"></i> Facebook';
+                    socialContainer.appendChild(facebookLink);
+                }
+                
+                if (emp.instagram) {
+                    const instagramLink = document.createElement('a');
+                    instagramLink.href = emp.instagram.includes('://') ? emp.instagram : `https://${emp.instagram}`;
+                    instagramLink.target = '_blank';
+                    instagramLink.className = 'social-link instagram';
+                    instagramLink.innerHTML = '<i class="fab fa-instagram"></i> Instagram';
+                    socialContainer.appendChild(instagramLink);
+                }
+                
+                if (!emp.facebook && !emp.instagram) {
+                    socialContainer.innerHTML = '<p style="text-align: center; color: var(--gray);">No hay redes sociales registradas</p>';
+                }
+                
+                businessModal.classList.add('show');
             }
 
-            // Mostrar modal de login
-            btnAdmin.addEventListener('click', () => {
-                loginModal.style.display = 'flex';
+            // Event Listeners
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.sector;
+                    mostrarEmprendimientos();
+                });
             });
 
-            // Validar credenciales
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const usuario = document.getElementById('usuario').value;
+            searchButton.addEventListener('click', () => {
+                currentSearch = searchInput.value.trim();
+                mostrarEmprendimientos();
+            });
+
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    currentSearch = searchInput.value.trim();
+                    mostrarEmprendimientos();
+                }
+            });
+
+            adminBtn.addEventListener('click', () => {
+                loginModal.classList.add('show');
+            });
+
+            loginButton.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 
-                if(usuario === CREDENCIALES.usuario && password === CREDENCIALES.password) {
+                if (username === CREDENCIALES.usuario && password === CREDENCIALES.password) {
                     const session = {
                         logged: true,
                         expires: Date.now() + 3600000 // 1 hora
@@ -224,30 +813,24 @@
                 }
             });
 
-            // Cerrar modales
             closeButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    modal.style.display = 'none';
-                    loginModal.style.display = 'none';
+                    businessModal.classList.remove('show');
+                    loginModal.classList.remove('show');
                 });
             });
 
             window.addEventListener('click', (e) => {
-                if (e.target === modal) modal.style.display = 'none';
-                if (e.target === loginModal) loginModal.style.display = 'none';
-            });
-
-            // Configurar filtros
-            filtros.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filtros.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    mostrarEmprendimientos(btn.dataset.sector);
-                });
+                if (e.target === businessModal) {
+                    businessModal.classList.remove('show');
+                }
+                if (e.target === loginModal) {
+                    loginModal.classList.remove('show');
+                }
             });
 
             // Inicialización
-            mostrarEmprendimientos();
+            cargarDatos();
         });
     </script>
 </body>
