@@ -2,486 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración | Emprendimientos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Galería de Emprendedoras (Admin)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        :root {
-            --primary: #3f51b5;
-            --primary-dark: #303f9f;
-            --light: #f5f7fa;
-            --dark: #212121;
-            --gray: #757575;
-            --white: #ffffff;
-            --error: #f44336;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--light);
-            color: var(--dark);
-        }
-
-        .admin-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .admin-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .admin-title h1 {
-            font-size: 2rem;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .admin-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .admin-btn.primary {
-            background: var(--white);
-            color: var(--primary);
-        }
-
-        .admin-btn.primary:hover {
-            background: #e8eaf6;
-        }
-
-        .admin-btn.secondary {
-            background: #4CAF50;
-            color: var(--white);
-        }
-
-        .admin-btn.secondary:hover {
-            background: #3e8e41;
-        }
-
-        .admin-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .admin-filter-btn {
-            padding: 0.5rem 1rem;
-            background: var(--white);
-            border: 1px solid var(--primary);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .admin-filter-btn.active, .admin-filter-btn:hover {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem 0;
-        }
-
-        .admin-card {
-            background: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .admin-card-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .admin-card-content {
-            padding: 1rem;
-        }
-
-        .admin-card-title {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .admin-card-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .action-btn.view {
-            background: #e8eaf6;
-            color: var(--primary);
-        }
-
-        .action-btn.delete {
-            background: #ffebee;
-            color: var(--error);
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 30px;
-            height: 30px;
-            background: var(--error);
-            color: var(--white);
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .admin-card:hover .delete-btn {
-            opacity: 1;
-        }
-
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray);
-        }
-
-        /* Modal */
-        .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-        }
-
-        .admin-modal-content {
-            background: var(--white);
-            max-width: 800px;
-            margin: 2rem auto;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .admin-close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .admin-modal-img {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-        }
-
-        .admin-modal-body {
-            padding: 1.5rem;
-        }
-
-        .admin-modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .admin-modal-btn {
-            flex: 1;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .admin-modal-btn.delete {
-            background: var(--error);
-            color: var(--white);
-        }
-
-        @media (max-width: 768px) {
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* Estilos iguales a los que te proporcioné anteriormente */
+        /* ... */
     </style>
 </head>
 <body>
     <!-- Verificación de autenticación -->
     <script>
-        if (!sessionStorage.getItem('adminAuth')) {
-            alert('Acceso no autorizado');
-            window.location.href = 'publico.html';
+        // Credenciales válidas
+        const CREDENCIALES_VALIDAS = {
+            usuario: "admin",
+            password: "emprendedoras2024"
+        };
+
+        // Verificar si está autenticado
+        const auth = JSON.parse(sessionStorage.getItem('adminAuth')) || {};
+        if(!auth.logged || auth.expires < Date.now()) {
+            sessionStorage.removeItem('adminAuth');
+            window.location.href = 'publico.html?redirect=galeria';
         }
     </script>
 
-    <header class="admin-header">
-        <div class="admin-container">
-            <div class="admin-title">
-                <h1><i class="fas fa-crown"></i> Panel de Administración</h1>
-                <div class="admin-actions">
-                    <a href="index.html" class="admin-btn primary"><i class="fas fa-plus"></i> Nuevo</a>
-                    <a href="publico.html" class="admin-btn secondary"><i class="fas fa-eye"></i> Vista Pública</a>
-                </div>
-            </div>
+    <header>
+        <div class="container">
+            <h1>Galería de Emprendedoras</h1>
+            <p class="subtitle">Panel de Administración</p>
         </div>
     </header>
 
-    <main class="admin-container">
-        <div class="admin-filters">
-            <button class="admin-filter-btn active" data-sector="todos">Todos</button>
-            <button class="admin-filter-btn" data-sector="Alimentos y Bebidas">Alimentos</button>
-            <button class="admin-filter-btn" data-sector="Artesanías">Artesanías</button>
-            <button class="admin-filter-btn" data-sector="Belleza y Cuidado Personal">Belleza</button>
-            <button class="admin-filter-btn" data-sector="Moda y Accesorios">Moda</button>
-            <button class="admin-filter-btn" data-sector="Tecnología">Tecnología</button>
-            <button class="admin-filter-btn" data-sector="Educación">Educación</button>
-            <button class="admin-filter-btn" data-sector="Salud y Bienestar">Salud</button>
-            <button class="admin-filter-btn" data-sector="Articulos de Novedad">Novedades</button>
-            <button class="admin-filter-btn" data-sector="Otros">Otros</button>
+    <div class="container">
+        <div class="contenedor-botones">
+            <a href="index.html" class="btn-registro">📝 Registrar Nuevo</a>
+            <a href="publico.html" class="btn-publico">👀 Ver Vista Pública</a>
+            <button id="btn-logout" class="btn-logout">🔒 Cerrar Sesión</button>
         </div>
-
-        <div id="adminGrid" class="admin-grid">
-            <div class="no-results">
-                <i class="fas fa-spinner fa-spin"></i> Cargando emprendimientos...
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal de Detalles -->
-    <div id="adminModal" class="admin-modal">
-        <div class="admin-modal-content">
-            <span class="admin-close-btn">&times;</span>
-            <img id="adminModalImg" class="admin-modal-img" src="" alt="">
-            <div class="admin-modal-body">
-                <h2 id="adminModalTitle"></h2>
-                <p><strong>Productos:</strong> <span id="adminModalProducts"></span></p>
-                <p><strong>Sector:</strong> <span id="adminModalSector"></span></p>
-                <p><strong>Contacto:</strong> <span id="adminModalContact"></span></p>
-                <p id="adminModalAddress"><strong>Dirección:</strong> <span></span></p>
-                
-                <div class="admin-modal-actions">
-                    <button id="adminModalDeleteBtn" class="admin-modal-btn delete">
-                        <i class="fas fa-trash-alt"></i> Eliminar
-                    </button>
-                </div>
-            </div>
-        </div>
+        
+        <!-- Resto del contenido igual al anterior -->
+        <!-- ... -->
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configuración
-            const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
-            
-            // Elementos del DOM
-            const adminGrid = document.getElementById('adminGrid');
-            const filterButtons = document.querySelectorAll('.admin-filter-btn');
-            const adminModal = document.getElementById('adminModal');
-            const adminModalDeleteBtn = document.getElementById('adminModalDeleteBtn');
-
-            // Variables de estado
-            let emprendimientos = [];
-            let currentFilter = 'todos';
-            let currentEmprendimiento = null;
-
-            // Cargar datos
-            async function cargarDatos() {
-                try {
-                    const response = await fetch(URL_SCRIPT);
-                    if (!response.ok) throw new Error('Error al cargar datos');
-                    
-                    const data = await response.json();
-                    if (!Array.isArray(data)) throw new Error('Formato de datos inválido');
-                    
-                    emprendimientos = data;
-                    mostrarEmprendimientos();
-                } catch (error) {
-                    console.error('Error:', error);
-                    adminGrid.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-exclamation-triangle"></i> Error al cargar los datos
-                        </div>
-                    `;
-                }
-            }
-
-            // Mostrar emprendimientos
-            function mostrarEmprendimientos() {
-                let filtered = emprendimientos;
-                
-                // Aplicar filtro
-                if (currentFilter !== 'todos') {
-                    filtered = filtered.filter(emp => emp.sector === currentFilter);
-                }
-                
-                // Mostrar resultados
-                if (filtered.length === 0) {
-                    adminGrid.innerHTML = `
-                        <div class="no-results">
-                            No se encontraron emprendimientos
-                        </div>
-                    `;
-                    return;
-                }
-                
-                adminGrid.innerHTML = '';
-                filtered.forEach(emp => {
-                    const card = document.createElement('div');
-                    card.className = 'admin-card';
-                    card.innerHTML = `
-                        <button class="delete-btn" data-id="${emp.id}">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                        <img src="${emp.imagen || 'https://via.placeholder.com/400x300?text=Sin+imagen'}" 
-                             class="admin-card-img" 
-                             alt="${emp.nombre}">
-                        <div class="admin-card-content">
-                            <h3 class="admin-card-title">${emp.nombre}</h3>
-                            <p>${emp.sector}</p>
-                            <div class="admin-card-actions">
-                                <button class="action-btn view" data-id="${emp.id}">
-                                    <i class="fas fa-eye"></i> Ver
-                                </button>
-                                <button class="action-btn delete" data-id="${emp.id}">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Eventos
-                    card.querySelector('.action-btn.view').addEventListener('click', () => {
-                        mostrarDetalle(emp);
-                    });
-                    
-                    card.querySelector('.action-btn.delete').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        confirmarEliminacion(emp.id);
-                    });
-                    
-                    card.querySelector('.delete-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        confirmarEliminacion(emp.id);
-                    });
-                    
-                    adminGrid.appendChild(card);
-                });
-            }
-
-            // Mostrar detalle
-            function mostrarDetalle(emp) {
-                currentEmprendimiento = emp;
-                
-                document.getElementById('adminModalImg').src = emp.imagen || 'https://via.placeholder.com/800x400?text=Sin+imagen';
-                document.getElementById('adminModalTitle').textContent = emp.nombre;
-                document.getElementById('adminModalProducts').textContent = emp.productos;
-                document.getElementById('adminModalSector').textContent = emp.sector;
-                document.getElementById('adminModalContact').textContent = emp.contacto || 'No disponible';
-                
-                const addressElement = document.getElementById('adminModalAddress');
-                if (emp.direccion) {
-                    addressElement.querySelector('span').textContent = emp.direccion;
-                    addressElement.style.display = 'block';
-                } else {
-                    addressElement.style.display = 'none';
-                }
-                
-                adminModal.style.display = 'block';
-            }
-
-            // Confirmar eliminación
-            async function confirmarEliminacion(id) {
-                if (!confirm('¿Estás seguro de eliminar este emprendimiento?')) return;
-                
-                try {
-                    const response = await fetch(URL_SCRIPT, {
-                        method: 'DELETE',
-                        body: JSON.stringify({ id: id }),
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.status === "success") {
-                        adminModal.style.display = 'none';
-                        await cargarDatos();
-                    } else {
-                        throw new Error(data.message || "Error al eliminar");
-                    }
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
-            }
-
-            // Event Listeners
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.sector;
-                    mostrarEmprendimientos();
-                });
-            });
-
-            document.querySelector('.admin-close-btn').addEventListener('click', () => {
-                adminModal.style.display = 'none';
-            });
-
-            adminModalDeleteBtn.addEventListener('click', () => {
-                if (currentEmprendimiento) {
-                    confirmarEliminacion(currentEmprendimiento.id);
-                }
-            });
-
-            // Cargar datos iniciales
-            cargarDatos();
+        // Botón de logout
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            sessionStorage.removeItem('adminAuth');
+            window.location.href = 'publico.html';
         });
+
+        // Resto del código de la galería
+        // ...
     </script>
 </body>
 </html>
