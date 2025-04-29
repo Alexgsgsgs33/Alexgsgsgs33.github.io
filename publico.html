@@ -2,78 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Emprendimientos Femeninos</title>
+    <title>Emprendimientos Femeninos - Vista Pública</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Estilos anteriores más el modal de login */
+        /* Mantén todos los estilos que ya tienes */
         /* ... */
-
-        /* Modal de login */
-        .login-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .login-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        .login-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #ff4444;
-        }
-        .login-form input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        .login-form button {
-            width: 100%;
-            padding: 12px;
-            background: #0d47a1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        .login-error {
-            color: #ff4444;
-            text-align: center;
-            margin-top: 10px;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <header>
-        <!-- Encabezado igual al anterior -->
-        <!-- ... -->
+        <div class="container">
+            <h1>Emprendimientos Femeninos</h1>
+            <p class="subtitle">Descubre y apoya negocios liderados por mujeres</p>
+        </div>
     </header>
 
     <div class="container">
-        <!-- Contenido igual al anterior -->
+        <!-- Filtros y botones se mantienen igual -->
         <!-- ... -->
+
+        <div id="contenedor" class="tarjetas">
+            <p class="sin-resultados">Cargando emprendimientos...</p>
+        </div>
 
         <center>
             <a href="index.html" class="admin-link">📝 Registrar mi emprendimiento</a>
@@ -81,12 +31,20 @@
         </center>
     </div>
 
-    <!-- Modal de login -->
-    <div id="loginModal" class="login-modal">
-        <div class="login-content">
-            <span class="login-close">&times;</span>
-            <h3 style="text-align:center; color:#0d47a1;">Acceso Administradores</h3>
-            <form id="loginForm" class="login-form">
+    <!-- Modal para detalles -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-info"></div>
+        </div>
+    </div>
+
+    <!-- Modal para login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 style="text-align:center; color:#0d47a1;">Acceso Administrativo</h3>
+            <form id="loginForm">
                 <input type="text" id="usuario" placeholder="Usuario" required>
                 <input type="password" id="password" placeholder="Contraseña" required>
                 <button type="submit">Ingresar</button>
@@ -96,68 +54,120 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Credenciales válidas
-            const CREDENCIALES_VALIDAS = {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // URL de tu API de SheetDB
+            const API_URL = 'https://sheetdb.io/api/v1/yuefqrt88lmh2';
+            
+            // Elementos del DOM
+            const contenedor = document.getElementById('contenedor');
+            const modal = document.getElementById('modal');
+            const modalInfo = document.getElementById('modal-info');
+            const loginModal = document.getElementById('loginModal');
+            const btnAdmin = document.getElementById('btn-admin');
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+            const closeButtons = document.querySelectorAll('.close');
+            const filtros = document.querySelectorAll('.filtro-btn');
+
+            // Credenciales de administrador
+            const CREDENCIALES = {
                 usuario: "admin",
                 password: "emprendedoras2024"
             };
 
-            // Elementos del DOM
-            const btnAdmin = document.getElementById('btn-admin');
-            const loginModal = document.getElementById('loginModal');
-            const loginForm = document.getElementById('loginForm');
-            const loginError = document.getElementById('loginError');
-            const closeLogin = document.querySelector('.login-close');
-
-            // Verificar si hay redirección desde galería
-            const urlParams = new URLSearchParams(window.location.search);
-            if(urlParams.get('redirect') === 'galeria') {
-                btnAdmin.click();
-            }
-
-            // Mostrar modal de login
-            btnAdmin.addEventListener('click', () => {
-                loginModal.style.display = 'flex';
-            });
-
-            // Cerrar modal
-            closeLogin.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-            });
-
-            // Validar credenciales
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const usuario = document.getElementById('usuario').value;
-                const password = document.getElementById('password').value;
-                
-                if(usuario === CREDENCIALES_VALIDAS.usuario && password === CREDENCIALES_VALIDAS.password) {
-                    // Crear sesión válida por 1 hora
-                    const session = {
-                        logged: true,
-                        expires: Date.now() + 3600000 // 1 hora
-                    };
-                    sessionStorage.setItem('adminAuth', JSON.stringify(session));
-                    window.location.href = 'galeria.html';
-                } else {
-                    loginError.style.display = 'block';
-                    setTimeout(() => {
-                        loginError.style.display = 'none';
-                    }, 3000);
+            // Función para cargar datos desde la API
+            const cargarDatos = async () => {
+                try {
+                    const respuesta = await fetch(API_URL);
+                    if (!respuesta.ok) throw new Error('Error al cargar datos');
+                    const datos = await respuesta.json();
+                    return datos;
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                    contenedor.innerHTML = '<p class="sin-resultados">Error al cargar los emprendimientos. Por favor intente más tarde.</p>';
+                    return [];
                 }
-            });
+            };
 
-            // Cerrar al hacer clic fuera
-            window.addEventListener('click', (e) => {
-                if(e.target === loginModal) {
-                    loginModal.style.display = 'none';
+            // Función para mostrar emprendimientos
+            const mostrarEmprendimientos = async (sector = 'todos') => {
+                contenedor.innerHTML = '<p class="sin-resultados">Cargando emprendimientos...</p>';
+                const datos = await cargarDatos();
+                
+                if (datos.length === 0) {
+                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos registrados aún</p>';
+                    return;
                 }
-            });
 
-            // Resto del código de la vista pública
+                const filtrados = sector === 'todos' 
+                    ? datos 
+                    : datos.filter(emp => emp.sector === sector);
+
+                if (filtrados.length === 0) {
+                    contenedor.innerHTML = '<p class="sin-resultados">No hay emprendimientos en esta categoría</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = '';
+                filtrados.forEach(emp => {
+                    const card = document.createElement('div');
+                    card.className = 'negocio';
+                    card.innerHTML = `
+                        <img src="${emp.imagen || 'https://via.placeholder.com/500x300?text=Imagen+no+disponible'}" 
+                             alt="${emp.nombre}">
+                        <h3>${emp.nombre}</h3>
+                        <p><strong>${emp.productos}</strong></p>
+                        <span class="sector">${emp.sector}</span>
+                        <p style="margin-top:15px; color:#0d47a1; font-weight:500;">
+                            👆 Haz clic para ver detalles
+                        </p>
+                    `;
+                    card.addEventListener('click', () => mostrarDetalles(emp));
+                    contenedor.appendChild(card);
+                });
+            };
+
+            // Función para mostrar detalles
+            const mostrarDetalles = (emp) => {
+                modalInfo.innerHTML = `
+                    <img src="${emp.imagen || 'https://via.placeholder.com/800x400?text=Imagen+no+disponible'}" 
+                         class="modal-img" alt="${emp.nombre}">
+                    
+                    <h2 style="color:#0d47a1; margin-bottom:15px;">${emp.nombre}</h2>
+                    
+                    <div class="info-box">
+                        <p><strong>📋 Productos/Servicios:</strong> ${emp.productos}</p>
+                        <p><strong>🏷️ Sector:</strong> ${emp.sector}</p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <p><strong>📞 Contacto:</strong> ${emp.contacto}</p>
+                        ${emp.direccion ? `<p><strong>📍 Dirección:</strong> ${emp.direccion}</p>` : ''}
+                    </div>
+                    
+                    <img src="${emp.foto || 'https://via.placeholder.com/200?text=Foto+no+disponible'}" 
+                         class="persona-img" alt="Emprendedora: ${emp.nombre}">
+                    
+                    ${(emp.facebook || emp.instagram) ? `
+                    <div class="redes">
+                        ${emp.facebook ? `<a href="${emp.facebook.includes('://') ? emp.facebook : 'https://'+emp.facebook}" 
+                                           target="_blank"><i class="fab fa-facebook"></i> Facebook</a>` : ''}
+                        ${emp.instagram ? `<a href="${emp.instagram.includes('://') ? emp.instagram : 'https://'+emp.instagram}" 
+                                             target="_blank"><i class="fab fa-instagram"></i> Instagram</a>` : ''}
+                    </div>` : ''}
+                    
+                    <p style="text-align:center; margin-top:20px; color:#777;">
+                        <small>📅 Registrado el: ${emp.fechaRegistro || 'Fecha no disponible'}</small>
+                    </p>
+                `;
+                modal.style.display = 'flex';
+            };
+
+            // Resto de tu código para manejar eventos, login, etc.
             // ...
+            
+            // Inicializar mostrando todos los emprendimientos
+            mostrarEmprendimientos();
         });
     </script>
 </body>
