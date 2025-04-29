@@ -6,8 +6,22 @@
     <title>Registro de Emprendedoras</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Estilos iguales a los que te proporcioné anteriormente */
-        /* ... */
+        /* Mantén todos los estilos que ya tienes */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        /* ... (mantén todos los demás estilos) ... */
     </style>
 </head>
 <body>
@@ -20,12 +34,16 @@
 
     <div class="container">
         <form id="formulario">
-            <!-- Campos del formulario iguales a los anteriores -->
+            <div class="form-group">
+                <label class="campo-obligatorio">Nombre del Negocio</label>
+                <input type="text" name="nombre" placeholder="Ej: Dulces Artesanales María" required>
+            </div>
+            
+            <!-- Mantén todos los campos del formulario que ya tienes -->
             <!-- ... -->
             
             <button type="submit">Registrar Emprendimiento</button>
             <a href="publico.html" class="btn-galeria">Ver Galería Pública</a>
-            <a href="galeria.html" class="btn-galeria" style="background-color: #673AB7;">Acceso Administradores</a>
         </form>
 
         <div id="mensajeExito" class="mensaje-exito"></div>
@@ -34,6 +52,8 @@
     <script>
         const formulario = document.getElementById('formulario');
         const mensajeExito = document.getElementById('mensajeExito');
+        
+        // URL de tu API de SheetDB
         const API_URL = 'https://sheetdb.io/api/v1/yuefqrt88lmh2';
 
         formulario.addEventListener('submit', async (e) => {
@@ -41,10 +61,12 @@
             const formData = new FormData(formulario);
             const data = {};
 
+            // Convertir FormData a objeto
             formData.forEach((value, key) => {
                 data[key] = value;
             });
 
+            // Agregar fecha de registro
             data.fechaRegistro = new Date().toLocaleString('es-MX', {
                 weekday: 'long',
                 year: 'numeric',
@@ -55,6 +77,7 @@
             });
 
             try {
+                // Enviar datos a la API
                 const respuesta = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -62,6 +85,7 @@
                 });
                 
                 if (respuesta.ok) {
+                    // Mostrar mensaje de éxito
                     mensajeExito.textContent = `¡${data.nombre} registrado con éxito!`;
                     mensajeExito.style.display = 'block';
                     formulario.reset();
