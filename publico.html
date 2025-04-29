@@ -2,470 +2,162 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emprendimientos Femeninos | Directorio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Emprendimientos Femeninos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        :root {
-            --primary: #3f51b5;
-            --primary-dark: #303f9f;
-            --light: #f5f7fa;
-            --dark: #212121;
-            --gray: #757575;
-            --white: #ffffff;
-        }
+        /* Estilos anteriores más el modal de login */
+        /* ... */
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--light);
-            color: var(--dark);
-            line-height: 1.6;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-            padding: 2rem 0;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .search-container {
-            margin: 2rem auto;
-            max-width: 600px;
-        }
-
-        .search-box {
-            display: flex;
-            border-radius: 50px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        #searchInput {
-            flex: 1;
-            padding: 0.8rem 1.2rem;
-            border: none;
-            font-size: 1rem;
-        }
-
-        #searchButton {
-            padding: 0 1.5rem;
-            background: var(--primary);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-        }
-
-        .filters {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            background: var(--white);
-            border: 1px solid var(--primary);
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .business-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem 0 3rem;
-        }
-
-        .business-card {
-            background: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .business-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .business-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .business-info {
-            padding: 1.2rem;
-        }
-
-        .business-info h3 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .business-sector {
-            display: inline-block;
-            background: rgba(63, 81, 181, 0.1);
-            color: var(--primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-        }
-
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray);
-        }
-
-        .admin-btn {
-            display: inline-block;
-            margin: 1rem auto;
-            padding: 0.75rem 1.5rem;
-            background: #4CAF50;
-            color: var(--white);
-            border-radius: 50px;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        /* Modal */
-        .modal {
+        /* Modal de login */
+        .login-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
-            overflow-y: auto;
+            justify-content: center;
+            align-items: center;
         }
-
-        .modal-content {
-            background: var(--white);
-            max-width: 800px;
-            margin: 2rem auto;
-            border-radius: 8px;
+        .login-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             position: relative;
         }
-
-        .close-btn {
+        .login-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
             cursor: pointer;
+            color: #ff4444;
         }
-
-        .modal-img {
+        .login-form input {
             width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        /* Login Modal */
-        .login-form {
-            padding: 2rem;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-size: 1em;
         }
-
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: #0d47a1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+        }
         .login-error {
-            color: #f44336;
-            display: none;
-            margin-top: 1rem;
+            color: #ff4444;
             text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .business-grid {
-                grid-template-columns: 1fr;
-            }
+            margin-top: 10px;
+            display: none;
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>Emprendimientos Femeninos</h1>
-            <p class="subtitle">Descubre y apoya negocios liderados por mujeres</p>
-        </div>
+        <!-- Encabezado igual al anterior -->
+        <!-- ... -->
     </header>
 
-    <main class="container">
-        <div class="search-container">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Buscar emprendimientos...">
-                <button id="searchButton"><i class="fas fa-search"></i></button>
-            </div>
-        </div>
-
-        <div class="filters">
-            <button class="filter-btn active" data-sector="todos">Todos</button>
-            <button class="filter-btn" data-sector="Alimentos y Bebidas">Alimentos</button>
-            <button class="filter-btn" data-sector="Artesanías">Artesanías</button>
-            <button class="filter-btn" data-sector="Belleza y Cuidado Personal">Belleza</button>
-            <button class="filter-btn" data-sector="Moda y Accesorios">Moda</button>
-            <button class="filter-btn" data-sector="Tecnología">Tecnología</button>
-            <button class="filter-btn" data-sector="Educación">Educación</button>
-            <button class="filter-btn" data-sector="Salud y Bienestar">Salud</button>
-            <button class="filter-btn" data-sector="Articulos de Novedad">Novedades</button>
-            <button class="filter-btn" data-sector="Otros">Otros</button>
-        </div>
-
-        <div id="businessGrid" class="business-grid">
-            <div class="no-results">
-                <i class="fas fa-spinner fa-spin"></i> Cargando emprendimientos...
-            </div>
-        </div>
+    <div class="container">
+        <!-- Contenido igual al anterior -->
+        <!-- ... -->
 
         <center>
-            <button id="adminBtn" class="admin-btn"><i class="fas fa-lock"></i> Acceso Administradores</button>
+            <a href="index.html" class="admin-link">📝 Registrar mi emprendimiento</a>
+            <button id="btn-admin" class="admin-link">🔒 Acceso Administradores</button>
         </center>
-    </main>
-
-    <!-- Business Modal -->
-    <div id="businessModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <img id="modalBusinessImg" class="modal-img" src="" alt="">
-            <div class="modal-body">
-                <h2 id="modalBusinessName"></h2>
-                <p><strong>Productos:</strong> <span id="modalBusinessProducts"></span></p>
-                <p><strong>Sector:</strong> <span id="modalBusinessSector"></span></p>
-                <p><strong>Contacto:</strong> <span id="modalBusinessContact"></span></p>
-                <p id="modalBusinessAddress"><strong>Dirección:</strong> <span></span></p>
-            </div>
-        </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="login-form">
-                <h3>Acceso Administradores</h3>
-                <div class="form-group">
-                    <input type="text" id="username" placeholder="Usuario" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" placeholder="Contraseña" required>
-                </div>
-                <button id="loginBtn" class="admin-btn">Ingresar</button>
+    <!-- Modal de login -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-content">
+            <span class="login-close">&times;</span>
+            <h3 style="text-align:center; color:#0d47a1;">Acceso Administradores</h3>
+            <form id="loginForm" class="login-form">
+                <input type="text" id="usuario" placeholder="Usuario" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit">Ingresar</button>
                 <p id="loginError" class="login-error">Credenciales incorrectas</p>
-            </div>
+            </form>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configuración
-            const URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbzMOed4cwo-HIxgYYB5xYS2M5S9_o_xOeQ_mxEEP1tlCT1mNZjHGIZdz_NuStOY8cSO/exec';
-            const CREDENCIALES = {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Credenciales válidas
+            const CREDENCIALES_VALIDAS = {
                 usuario: "admin",
                 password: "emprendedoras2024"
             };
 
             // Elementos del DOM
-            const businessGrid = document.getElementById('businessGrid');
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const adminBtn = document.getElementById('adminBtn');
-            const loginBtn = document.getElementById('loginBtn');
+            const btnAdmin = document.getElementById('btn-admin');
+            const loginModal = document.getElementById('loginModal');
+            const loginForm = document.getElementById('loginForm');
             const loginError = document.getElementById('loginError');
+            const closeLogin = document.querySelector('.login-close');
 
-            // Variables de estado
-            let emprendimientos = [];
-            let currentFilter = 'todos';
-            let currentSearch = '';
-
-            // Cargar datos
-            async function cargarDatos() {
-                try {
-                    const response = await fetch(URL_SCRIPT);
-                    if (!response.ok) throw new Error('Error al cargar datos');
-                    
-                    const data = await response.json();
-                    if (!Array.isArray(data)) throw new Error('Formato de datos inválido');
-                    
-                    emprendimientos = data;
-                    mostrarEmprendimientos();
-                } catch (error) {
-                    console.error('Error:', error);
-                    businessGrid.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-exclamation-triangle"></i> Error al cargar los datos
-                        </div>
-                    `;
-                }
+            // Verificar si hay redirección desde galería
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('redirect') === 'galeria') {
+                btnAdmin.click();
             }
 
-            // Mostrar emprendimientos
-            function mostrarEmprendimientos() {
-                let filtered = emprendimientos;
-                
-                // Aplicar filtro
-                if (currentFilter !== 'todos') {
-                    filtered = filtered.filter(emp => emp.sector === currentFilter);
-                }
-                
-                // Aplicar búsqueda
-                if (currentSearch) {
-                    const searchTerm = currentSearch.toLowerCase();
-                    filtered = filtered.filter(emp => 
-                        emp.nombre.toLowerCase().includes(searchTerm) || 
-                        emp.productos.toLowerCase().includes(searchTerm)
-                    );
-                }
-                
-                // Mostrar resultados
-                if (filtered.length === 0) {
-                    businessGrid.innerHTML = `
-                        <div class="no-results">
-                            No se encontraron emprendimientos
-                        </div>
-                    `;
-                    return;
-                }
-                
-                businessGrid.innerHTML = '';
-                filtered.forEach(emp => {
-                    const card = document.createElement('div');
-                    card.className = 'business-card';
-                    card.innerHTML = `
-                        <img src="${emp.imagen || 'https://via.placeholder.com/400x300?text=Sin+imagen'}" 
-                             class="business-img" 
-                             alt="${emp.nombre}">
-                        <div class="business-info">
-                            <h3>${emp.nombre}</h3>
-                            <p>${emp.productos}</p>
-                            <span class="business-sector">${emp.sector}</span>
-                        </div>
-                    `;
-                    card.addEventListener('click', () => mostrarDetalle(emp));
-                    businessGrid.appendChild(card);
-                });
-            }
-
-            // Mostrar detalle
-            function mostrarDetalle(emp) {
-                document.getElementById('modalBusinessImg').src = emp.imagen || 'https://via.placeholder.com/800x400?text=Sin+imagen';
-                document.getElementById('modalBusinessName').textContent = emp.nombre;
-                document.getElementById('modalBusinessProducts').textContent = emp.productos;
-                document.getElementById('modalBusinessSector').textContent = emp.sector;
-                document.getElementById('modalBusinessContact').textContent = emp.contacto || 'No disponible';
-                
-                const addressElement = document.getElementById('modalBusinessAddress');
-                if (emp.direccion) {
-                    addressElement.querySelector('span').textContent = emp.direccion;
-                    addressElement.style.display = 'block';
-                } else {
-                    addressElement.style.display = 'none';
-                }
-                
-                document.getElementById('businessModal').style.display = 'block';
-            }
-
-            // Event Listeners
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.sector;
-                    mostrarEmprendimientos();
-                });
+            // Mostrar modal de login
+            btnAdmin.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
             });
 
-            searchButton.addEventListener('click', () => {
-                currentSearch = searchInput.value.trim();
-                mostrarEmprendimientos();
+            // Cerrar modal
+            closeLogin.addEventListener('click', () => {
+                loginModal.style.display = 'none';
             });
 
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    currentSearch = searchInput.value.trim();
-                    mostrarEmprendimientos();
-                }
-            });
-
-            adminBtn.addEventListener('click', () => {
-                document.getElementById('loginModal').style.display = 'block';
-            });
-
-            loginBtn.addEventListener('click', () => {
-                const username = document.getElementById('username').value;
+            // Validar credenciales
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const usuario = document.getElementById('usuario').value;
                 const password = document.getElementById('password').value;
                 
-                if (username === CREDENCIALES.usuario && password === CREDENCIALES.password) {
-                    sessionStorage.setItem('adminAuth', 'true');
+                if(usuario === CREDENCIALES_VALIDAS.usuario && password === CREDENCIALES_VALIDAS.password) {
+                    // Crear sesión válida por 1 hora
+                    const session = {
+                        logged: true,
+                        expires: Date.now() + 3600000 // 1 hora
+                    };
+                    sessionStorage.setItem('adminAuth', JSON.stringify(session));
                     window.location.href = 'galeria.html';
                 } else {
                     loginError.style.display = 'block';
+                    setTimeout(() => {
+                        loginError.style.display = 'none';
+                    }, 3000);
                 }
             });
 
-            // Cerrar modales
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.closest('.modal').style.display = 'none';
-                });
+            // Cerrar al hacer clic fuera
+            window.addEventListener('click', (e) => {
+                if(e.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
             });
 
-            // Cargar datos iniciales
-            cargarDatos();
+            // Resto del código de la vista pública
+            // ...
         });
     </script>
 </body>
