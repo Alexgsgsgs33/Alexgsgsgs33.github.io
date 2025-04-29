@@ -5,20 +5,18 @@
     <title>Galería de Emprendedoras (Admin)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Estilos iguales a los que te proporcioné anteriormente */
+        /* Mantén todos los estilos que ya tienes */
         /* ... */
     </style>
 </head>
 <body>
     <!-- Verificación de autenticación -->
     <script>
-        // Credenciales válidas
         const CREDENCIALES_VALIDAS = {
             usuario: "admin",
             password: "emprendedoras2024"
         };
 
-        // Verificar si está autenticado
         const auth = JSON.parse(sessionStorage.getItem('adminAuth')) || {};
         if(!auth.logged || auth.expires < Date.now()) {
             sessionStorage.removeItem('adminAuth');
@@ -40,19 +38,73 @@
             <button id="btn-logout" class="btn-logout">🔒 Cerrar Sesión</button>
         </div>
         
-        <!-- Resto del contenido igual al anterior -->
+        <!-- Filtros y contenido se mantienen igual -->
         <!-- ... -->
     </div>
 
     <script>
-        // Botón de logout
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            sessionStorage.removeItem('adminAuth');
-            window.location.href = 'publico.html';
-        });
+        document.addEventListener('DOMContentLoaded', async () => {
+            // URL de tu API de SheetDB
+            const API_URL = 'https://sheetdb.io/api/v1/yuefqrt88lmh2';
+            
+            // Elementos del DOM
+            const contenedor = document.getElementById('contenedor');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modalContent');
+            const filtros = document.querySelectorAll('.filtros button');
+            const btnLogout = document.getElementById('btn-logout');
+            
+            // Función para cargar datos desde la API
+            const cargarDatos = async () => {
+                try {
+                    const respuesta = await fetch(API_URL);
+                    if (!respuesta.ok) throw new Error('Error al cargar datos');
+                    return await respuesta.json();
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                    contenedor.innerHTML = '<p class="sin-resultados">Error al cargar los emprendimientos. Por favor intente más tarde.</p>';
+                    return [];
+                }
+            };
 
-        // Resto del código de la galería
-        // ...
+            // Función para eliminar un emprendimiento
+            const eliminarEmprendimiento = async (id) => {
+                if (!confirm('¿Estás seguro de eliminar este emprendimiento?\nEsta acción no se puede deshacer.')) {
+                    return;
+                }
+                
+                try {
+                    // En SheetDB necesitas saber el ID o algún campo único para eliminar
+                    // Esta parte depende de cómo esté configurada tu API
+                    const respuesta = await fetch(`${API_URL}/id/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (respuesta.ok) {
+                        // Recargar la vista después de eliminar
+                        const sectorActivo = document.querySelector('.filtros button.active').dataset.sector;
+                        mostrarEmprendimientos(sectorActivo);
+                    } else {
+                        throw new Error('Error al eliminar');
+                    }
+                } catch (error) {
+                    console.error("Error al eliminar:", error);
+                    alert("Ocurrió un error al eliminar el emprendimiento");
+                }
+            };
+
+            // Resto de tus funciones (mostrarEmprendimientos, mostrarDetalles, etc.)
+            // ...
+
+            // Botón de logout
+            btnLogout.addEventListener('click', () => {
+                sessionStorage.removeItem('adminAuth');
+                window.location.href = 'publico.html';
+            });
+
+            // Inicializar mostrando todos los emprendimientos
+            mostrarEmprendimientos();
+        });
     </script>
 </body>
 </html>
